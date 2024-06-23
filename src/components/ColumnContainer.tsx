@@ -1,14 +1,28 @@
 import { BiTrash } from "react-icons/bi";
-import { Column, Id } from "../Types/types";
+import { CiCirclePlus } from "react-icons/ci";
+import { Column, Id, Task } from "../Types/types";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import { useState } from "react";
+import TaskCard from "./TaskCard";
 
 interface ColumnContainerProps {
   column: Column;
   deleteColumn: (id: Id) => void;
+  updateColumn: (id: Id, title: string) => void;
+  createTask: (columnId: Id) => void;
+  tasks: Task[];
+  deleteTask: (id: Id) => void;
 }
 
-const ColumnContainer = ({ column, deleteColumn }: ColumnContainerProps) => {
+const ColumnContainer = ({
+  column,
+  deleteColumn,
+  updateColumn,
+  createTask,
+  tasks,
+  deleteTask
+}: ColumnContainerProps) => {
   const {
     setNodeRef,
     attributes,
@@ -17,12 +31,14 @@ const ColumnContainer = ({ column, deleteColumn }: ColumnContainerProps) => {
     transition,
     isDragging,
   } = useSortable({
-    id: column.id,
+    id: column?.id,
     data: {
       type: "Column",
       column,
     },
   });
+  const [editMode, setEditMode] = useState(false);
+  //const [updateColumn, setUpdateColumn] = useState('');
 
   const style = {
     transition,
@@ -47,26 +63,50 @@ const ColumnContainer = ({ column, deleteColumn }: ColumnContainerProps) => {
     >
       {/* Column Title */}
       <div
+        onClick={() => setEditMode(!editMode)}
         {...attributes}
         {...listeners}
-        className="bg-mainBackground text-md h-[60px] cursor-grab rounded-md rounded-b-none p-3 font-bold border-columnBackground border-4 flex justify-between items-center"
+        className="bg-mainBackground text-md h-[60px] cursor-grab rounded-md rounded-b-none p-3 font-medium border-columnBackground border-4 flex justify-between items-center text-green-500 text-lg"
       >
-        <div className="flex gap-2">
+        <div className="flex gap-4">
           <span className="flex justify-center items-center bg-columnBackground px-2 py-1 text-sm rounded-full">
             0
           </span>
-          {column.title}
+          {!editMode && column.title}
+          {editMode && (
+            <input
+              autoFocus
+              value={column.title}
+              onChange={(e) => updateColumn(column?.id, e.target.value)}
+              onBlur={() => setEditMode(false)}
+              onKeyDown={(e) => {
+                if (e.key !== "Enter") return;
+                setEditMode(false);
+              }}
+              className="bg-columnBackground focus:border-gray-400 border h-[40px] px-2 w-full rounded outline-none"
+            />
+          )}
         </div>
-        <button onClick={() => deleteColumn(column.id)}>
+        <button onClick={() => deleteColumn(column?.id)}>
           <BiTrash className="h-[25px] w-[25px] text-gray-400 hover:text-white" />
         </button>
       </div>
 
-      {/* column task  */}
-      <div className="flex flex-grow">content</div>
+      {/* column task CONTENT  */}
+      <div className="flex flex-grow flex flex-col gap-4 p-2 overflow-y-auto overflow-x-hidden"> 
+        {tasks.map((task) => (
+          <TaskCard key={task.id} task={task} deleteTask={deleteTask} />
+        ))}
+      </div>
 
       {/* column footer  */}
-      <div>footer</div>
+      <button
+        className="flex items-center gap-2 p-4 text-gray-400 hover:text-white border-columnBackground border-2 rounded-md active:bg-black hover:bg-mainBackground"
+        onClick={() => createTask(column?.id)}
+      >
+        <CiCirclePlus className="h-[25px] w-[25px]" />
+        Add Task
+      </button>
     </div>
   );
 };

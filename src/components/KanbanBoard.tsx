@@ -1,16 +1,17 @@
 import { useMemo, useState } from "react";
 import { CiCirclePlus } from "react-icons/ci";
-import { Column, Id } from "../Types/types";
+import { Column, Id, Task } from "../Types/types";
 import ColumnContainer from "./ColumnContainer";
 import { DndContext, DragOverlay, DragStartEvent, DragEndEvent, useSensor, PointerSensor, useSensors } from "@dnd-kit/core";
 import { SortableContext, arrayMove } from "@dnd-kit/sortable";
 import { createPortal } from "react-dom";
 
 const KanbanBoard = () => {
+    const [tasks, setTasks] = useState<Task[]>([]);
   const [columns, setColumns] = useState<Column[]>([]);
   const [activeColumn, setActiveColumn] = useState<Column | null>(null);
   const columnsId = useMemo(
-    () => columns.map((column) => column.id),
+    () => columns.map((column) => column?.id),
     [columns]
   );
 
@@ -26,14 +27,42 @@ const KanbanBoard = () => {
     return Math.floor(Math.random() * 1000);
   };
 
+
+  const createTask = (columnId: Id) => {
+    const newTask: Task = {
+      id: generateId(),
+      columnId,
+      content: `Task ${tasks.length + 1}`,
+    };
+    setTasks([...tasks, newTask]);
+  };
+
+  const deleteTask = (id: Id) => {
+    const newTasks = tasks.filter((task) => task.id !== id);
+    setTasks(newTasks);
+  };
+
+
+
   const deleteColumn = (id: Id) => {
     const newColumns = columns.filter((column) => column.id !== id);
     setColumns(newColumns);
   };
 
+
+  const updateColumn = (id: Id, title: string) => {
+    const newColumns = columns.map((column) => {
+      if (column?.id !== id) return column;
+        return { ...column, title };
+      
+    });
+    setColumns(newColumns);
+  };
+
+
   const onDragStart = (event: DragStartEvent) => {
     if (event.active.data.current?.type === "Column") {
-      setActiveColumn(event.active.data.current.column);
+      setActiveColumn(event.active.data?.current?.column);
       return;
     }
   };
@@ -56,7 +85,7 @@ const KanbanBoard = () => {
 
   const sensors = useSensors(useSensor(PointerSensor, {
     activationConstraint: {
-      distance: 100,
+      distance: 3,
     },
   }))
   
@@ -69,11 +98,15 @@ const KanbanBoard = () => {
         <div className="m-auto flex gap-4">
           <div className="flex gap-4">
             <SortableContext items={columnsId}>
-              {columns.map((column) => (
+              {columns.map((column, index) => (
                 <ColumnContainer
-                  key={column.id}
+                  key={index}
                   column={column}
                   deleteColumn={deleteColumn}
+                  updateColumn={updateColumn}
+                  createTask={createTask}
+                  tasks = {tasks.filter(task => task.columnId === column.id)}
+                  deleteTask={deleteTask}
                 />
               ))}
             </SortableContext>
@@ -92,7 +125,11 @@ const KanbanBoard = () => {
             {activeColumn && (
               <ColumnContainer
                 column={activeColumn}
+                updateColumn={updateColumn}
                 deleteColumn={deleteColumn}
+                createTask={createTask}
+                deleteTask={deleteTask}
+                tasks = {tasks.filter(task => task.columnId === activeColumn.id)}
               />
             )}
           </DragOverlay>,

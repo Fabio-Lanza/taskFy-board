@@ -1,9 +1,9 @@
 import { BiTrash } from "react-icons/bi";
 import { CiCirclePlus } from "react-icons/ci";
 import { Column, Id, Task } from "../Types/types";
-import { useSortable } from "@dnd-kit/sortable";
+import { SortableContext, useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import TaskCard from "./TaskCard";
 
 interface ColumnContainerProps {
@@ -13,6 +13,7 @@ interface ColumnContainerProps {
   createTask: (columnId: Id) => void;
   tasks: Task[];
   deleteTask: (id: Id) => void;
+  updateTask: (id: Id, title: string) => void;
 }
 
 const ColumnContainer = ({
@@ -21,8 +22,12 @@ const ColumnContainer = ({
   updateColumn,
   createTask,
   tasks,
-  deleteTask
+  deleteTask,
+  updateTask,
 }: ColumnContainerProps) => {
+
+const tasksIds = useMemo(() => tasks.map((task) => task.id), [tasks]);
+
   const {
     setNodeRef,
     attributes,
@@ -30,15 +35,10 @@ const ColumnContainer = ({
     transform,
     transition,
     isDragging,
-  } = useSortable({
-    id: column?.id,
-    data: {
-      type: "Column",
-      column,
-    },
-  });
+  } = useSortable({id: column?.id,data: {type: "Column", column,},});
+
   const [editMode, setEditMode] = useState(false);
-  //const [updateColumn, setUpdateColumn] = useState('');
+  
 
   const style = {
     transition,
@@ -59,7 +59,7 @@ const ColumnContainer = ({
     <div
       ref={setNodeRef}
       style={style}
-      className="bg-columnBackground h-[600px] w-[350px] max-h-[600px] rounded-md flex flex-col"
+      className="bg-columnBackground h-[750px] w-[350px] max-h-[750px] rounded-md flex flex-col"
     >
       {/* Column Title */}
       <div
@@ -92,11 +92,18 @@ const ColumnContainer = ({
         </button>
       </div>
 
-      {/* column task CONTENT  */}
-      <div className="flex flex-grow flex flex-col gap-4 p-2 overflow-y-auto overflow-x-hidden"> 
-        {tasks.map((task) => (
-          <TaskCard key={task.id} task={task} deleteTask={deleteTask} />
-        ))}
+      {/*  ========================== column task CONTENT  =========================== */}
+      <div className="flex flex-grow flex flex-col gap-4 p-2 overflow-y-auto overflow-x-hidden">
+        <SortableContext items={tasksIds}>
+          {tasks.map((task) => (
+            <TaskCard
+              key={task.id}
+              task={task}
+              deleteTask={deleteTask}
+              updateTask={updateTask}
+            />
+          ))}
+        </SortableContext>
       </div>
 
       {/* column footer  */}

@@ -19,3 +19,8 @@ body #root {
 ::-webkit-scrollbar-thumb {
   @apply bg-rose-900 rounded-xl;
 }
+
+.task > ::-webkit-scrollbar-thumb {
+  @apply bg-gray-500 rounded-xl;
+
+}

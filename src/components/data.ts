@@ -1,3 +1,5 @@
+import { Column } from "../Types/types";
+
 export const defaultCols: Column[] = [
     {
       id: "task",

@@ -64,8 +64,8 @@ function ColumnContainer({
       border-2
       border-pink-500
       w-[350px]
-      h-[550px]
-      max-h-[550px]
+      h-[700px]
+      max-h-[700px]
       rounded-md
       flex
       flex-col
@@ -81,14 +81,14 @@ function ColumnContainer({
       className="
   bg-columnBackground
   w-[350px]
-  h-[750px]
-  max-h-[750px]
+  h-[700px]
+  max-h-[700px]
   rounded-md
   flex
   flex-col
   "
     >
-      {/* Column title */}
+      {/* ======================== Column title */}
       <div
         {...attributes}
         {...listeners}
@@ -160,7 +160,7 @@ function ColumnContainer({
         </button>
       </div>
 
-      {/* Column task container */}
+      {/* ======================== Column task container */}
       <div className="flex flex-grow flex-col gap-4 p-2 overflow-x-hidden overflow-y-auto">
         <SortableContext items={tasksIds}>
           {tasks.map((task) => (
@@ -173,9 +173,9 @@ function ColumnContainer({
           ))}
         </SortableContext>
       </div>
-      {/* Column footer */}
+      {/* ======================== Column footer */}
       <button
-        className="flex gap-2 items-center border-columnBackground border rounded-md p-4 border-x-columnBackground hover:bg-mainBackground hover:text-gray-400 hover:border-gray-400 active:bg-black"
+        className="flex gap-2 items-center border-columnBackground border rounded-md p-4 border-x-columnBackground hover:bg-mainBackground hover:text-red-500 hover:border-gray-400 active:bg-black"
         onClick={() => {
           createTask(column.id);
         }}

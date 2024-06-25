@@ -36,12 +36,9 @@ const KanbanBoard = () => {
   const [activeTask, setActiveTask] = useState<Task | null>(null);
 
   
-
   useEffect(() => {
     const localStorageTasks = localStorage.getItem("tasks");
-    console.log(localStorageTasks);
-    if(localStorageTasks !== null) setTasks(JSON.parse(localStorageTasks))
-    
+    if(localStorageTasks !== null) setTasks(JSON.parse(localStorageTasks)) 
   }, []);
 
   useEffect(() => {

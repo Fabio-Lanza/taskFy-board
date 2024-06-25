@@ -2,6 +2,7 @@ import { Id, Task } from "../Types/types";
 import { BiTrash } from "react-icons/bi";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import { useState } from "react";
 
 interface TaskCardProps {
   task: Task;

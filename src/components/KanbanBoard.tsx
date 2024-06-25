@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { CiCirclePlus } from "react-icons/ci";
 import { Column, Id, Task } from "../Types/types";
 import ColumnContainer from "./ColumnContainer";
@@ -16,18 +16,38 @@ import { SortableContext, arrayMove } from "@dnd-kit/sortable";
 import { createPortal } from "react-dom";
 import TaskCard from "./TaskCard";
 import { defaultCols } from "./data";
-import back from "../assets/background.jpg";
+
 
 
 const generateId = () => {
     return Math.floor(Math.random() * 1000);
   };
 
+  const getInialState = () => {
+    const localStorageTasks = localStorage.getItem("tasks")
+    return localStorageTasks ? JSON.parse(localStorageTasks) : []
+  }
+
+
 const KanbanBoard = () => {
-  const [tasks, setTasks] = useState<Task[]>([]);
+  const [tasks, setTasks] = useState<Task[]>(getInialState());
   const [columns, setColumns] = useState<Column[]>(defaultCols);
   const [activeColumn, setActiveColumn] = useState<Column | null>(null);
   const [activeTask, setActiveTask] = useState<Task | null>(null);
+
+  
+
+  useEffect(() => {
+    const localStorageTasks = localStorage.getItem("tasks");
+    console.log(localStorageTasks);
+    if(localStorageTasks !== null) setTasks(JSON.parse(localStorageTasks))
+    
+  }, []);
+
+  useEffect(() => {
+    window.localStorage.setItem('tasks', JSON.stringify(tasks));   
+  }, [tasks]);
+
 
   const columnsId = useMemo(
     () => columns.map((column) => column?.id),
@@ -173,7 +193,7 @@ const KanbanBoard = () => {
 
 
   return (
-    <div className="flex m-auto min-h-[1200px] w-screen pt-20 overflow-x-auto overflow-y-hidden px-36">
+    <div className="flex m-auto min-h-[1200px] w-screen pt-20 overflow-x-auto overflow-y-hidden px-20">
       <DndContext
         sensors={sensors}
         onDragOver={onDragOver}

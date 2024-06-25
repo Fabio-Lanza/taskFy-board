@@ -24,3 +24,9 @@ body #root {
   @apply bg-gray-500 rounded-xl;
 
 }
+
+.background{
+  background-image: url("./assets/background.jpg");
+  background-size: cover;
+  background-repeat: no-repeat; 
+}

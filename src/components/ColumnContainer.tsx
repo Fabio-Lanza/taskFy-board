@@ -6,17 +6,18 @@ import { CSS } from "@dnd-kit/utilities";
 import { useMemo, useState } from "react";
 import TaskCard from "./TaskCard";
 
-interface ColumnContainerProps {
+interface Props {
   column: Column;
   deleteColumn: (id: Id) => void;
   updateColumn: (id: Id, title: string) => void;
+
   createTask: (columnId: Id) => void;
-  tasks: Task[];
+  updateTask: (id: Id, content: string) => void;
   deleteTask: (id: Id) => void;
-  updateTask: (id: Id, title: string) => void;
+  tasks: Task[];
 }
 
-const ColumnContainer = ({
+function ColumnContainer({
   column,
   deleteColumn,
   updateColumn,
@@ -24,9 +25,12 @@ const ColumnContainer = ({
   tasks,
   deleteTask,
   updateTask,
-}: ColumnContainerProps) => {
+}: Props) {
+  const [editMode, setEditMode] = useState(false);
 
-const tasksIds = useMemo(() => tasks.map((task) => task.id), [tasks]);
+  const tasksIds = useMemo(() => {
+    return tasks.map((task) => task.id);
+  }, [tasks]);
 
   const {
     setNodeRef,
@@ -35,10 +39,14 @@ const tasksIds = useMemo(() => tasks.map((task) => task.id), [tasks]);
     transform,
     transition,
     isDragging,
-  } = useSortable({id: column?.id,data: {type: "Column", column,},});
-
-  const [editMode, setEditMode] = useState(false);
-  
+  } = useSortable({
+    id: column.id,
+    data: {
+      type: "Column",
+      column,
+    },
+    disabled: editMode,
+  });
 
   const style = {
     transition,
@@ -50,7 +58,18 @@ const tasksIds = useMemo(() => tasks.map((task) => task.id), [tasks]);
       <div
         ref={setNodeRef}
         style={style}
-        className="bg-columnBackground h-[600px] w-[350px] max-h-[600px] rounded-md flex flex-col opacity-40 border-2"
+        className="
+      bg-columnBackground
+      opacity-40
+      border-2
+      border-pink-500
+      w-[350px]
+      h-[600px]
+      max-h-[600px]
+      rounded-md
+      flex
+      flex-col
+      "
       ></div>
     );
   }
@@ -59,41 +78,90 @@ const tasksIds = useMemo(() => tasks.map((task) => task.id), [tasks]);
     <div
       ref={setNodeRef}
       style={style}
-      className="bg-columnBackground h-[750px] w-[350px] max-h-[750px] rounded-md flex flex-col"
+      className="
+  bg-columnBackground
+  w-[350px]
+  h-[750px]
+  max-h-[750px]
+  rounded-md
+  flex
+  flex-col
+  "
     >
-      {/* Column Title */}
+      {/* Column title */}
       <div
-        onClick={() => setEditMode(!editMode)}
         {...attributes}
         {...listeners}
-        className="bg-mainBackground text-md h-[60px] cursor-grab rounded-md rounded-b-none p-3 font-medium border-columnBackground border-4 flex justify-between items-center text-green-500 text-lg"
+        onClick={() => {
+          setEditMode(true);
+        }}
+        className="
+      bg-mainBackground
+      text-md
+      text-green-400
+      h-[60px]
+      cursor-grab
+      rounded-md
+      rounded-b-none
+      p-3
+      font-bold
+      border-columnBackground
+      border-4
+      flex
+      items-center
+      justify-between
+      "
       >
-        <div className="flex gap-4">
-          <span className="flex justify-center items-center bg-columnBackground px-2 py-1 text-sm rounded-full">
-            0
-          </span>
+        <div className="flex gap-3">
+          <div
+            className="
+        flex
+        justify-center
+        items-center
+        bg-mainBackground
+        px-2
+        text-
+        rounded-full
+        "
+          >
+            {tasks.length}
+          </div>
           {!editMode && column.title}
           {editMode && (
             <input
-              autoFocus
+              className="bg-black focus:border-rose-500 border rounded outline-none px-2"
               value={column.title}
-              onChange={(e) => updateColumn(column?.id, e.target.value)}
-              onBlur={() => setEditMode(false)}
+              onChange={(e) => updateColumn(column.id, e.target.value)}
+              autoFocus
+              onBlur={() => {
+                setEditMode(false);
+              }}
               onKeyDown={(e) => {
                 if (e.key !== "Enter") return;
                 setEditMode(false);
               }}
-              className="bg-columnBackground focus:border-gray-400 border h-[40px] px-2 w-full rounded outline-none"
             />
           )}
         </div>
-        <button onClick={() => deleteColumn(column?.id)}>
-          <BiTrash className="h-[25px] w-[25px] text-gray-400 hover:text-white" />
+        <button
+          onClick={() => {
+            deleteColumn(column.id);
+          }}
+          className="
+        stroke-gray-500
+        hover:stroke-white
+        hover:bg-columnBackground
+        rounded
+        px-1
+        py-2
+        "
+        >
+          <BiTrash className="h-[25px] w-[25px] text-gray-300 hover:text-gray-500" />
         </button>
       </div>
 
-      {/*  ========================== column task CONTENT  =========================== */}
-      <div className="flex flex-grow flex flex-col gap-4 p-2 overflow-y-auto overflow-x-hidden">
+      {/* Column task container */}
+      <div className="flex flex-grow flex-col gap-4 p-2 overflow-x-hidden overflow-y-auto">
         <SortableContext items={tasksIds}>
           {tasks.map((task) => (
             <TaskCard
@@ -105,17 +173,18 @@ const tasksIds = useMemo(() => tasks.map((task) => task.id), [tasks]);
           ))}
         </SortableContext>
       </div>
-
-      {/* column footer  */}
+      {/* Column footer */}
       <button
-        className="flex items-center gap-2 p-4 text-gray-400 hover:text-white border-columnBackground border-2 rounded-md active:bg-black hover:bg-mainBackground"
-        onClick={() => createTask(column?.id)}
+        className="flex gap-2 items-center border-columnBackground border rounded-md p-4 border-x-columnBackground hover:bg-mainBackground hover:text-gray-400 hover:border-gray-400 active:bg-black"
+        onClick={() => {
+          createTask(column.id);
+        }}
       >
-        <CiCirclePlus className="h-[25px] w-[25px]" />
-        Add Task
+        <CiCirclePlus className="h-[25px] w-[25px] stroke-gray-500" />
+        Add task
       </button>
     </div>
   );
-};
+}
 
 export default ColumnContainer;

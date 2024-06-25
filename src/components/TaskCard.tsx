@@ -24,7 +24,7 @@ const TaskCard = ({ task, deleteTask, updateTask }: TaskCardProps) => {
   } = useSortable({
     id: task?.id,
     data: {
-      type: "task",
+      type: "Task",
       task,
     },
   });
@@ -39,6 +39,13 @@ const TaskCard = ({ task, deleteTask, updateTask }: TaskCardProps) => {
     setMouseIsOver(false);
   };
 
+  if (isDragging) {
+    return (
+      <div ref={setNodeRef} style={style}  className="bg-mainBackground p-3 h-[130px] min-h-[100px] flex items-center text-left rounded-xl hover:ring-gray-500 cursor-grab relative task opacity-50 border-2 border-gray-500">
+      </div>
+    );
+  }
+
   //================= EDIT MODE
   if (editMode) {
     return (
@@ -47,7 +54,7 @@ const TaskCard = ({ task, deleteTask, updateTask }: TaskCardProps) => {
         style={style}
         {...attributes}
         {...listeners}
-        className="bg-mainBackground p-3 h-[130px] min-h-[100px] flex items-center text-left rounded-xl hover:ring-1 hover:ring-inset hover:ring-gray-500 cursor-grab relative"
+        className="bg-mainBackground p-3 h-[130px] min-h-[100px] flex items-center text-left rounded-xl hover:ring-1 hover:ring-inset hover:ring-gray-500 cursor-grab relative border border-rose-500"
       >
         <textarea
           autoFocus
@@ -79,7 +86,7 @@ const TaskCard = ({ task, deleteTask, updateTask }: TaskCardProps) => {
       onMouseLeave={() => {
         setMouseIsOver(false);
       }}
-      className="bg-mainBackground p-3 h-[130px] min-h-[100px] flex items-center text-left rounded-xl hover:ring-1 hover:ring-inset hover:ring-gray-500 cursor-grab relative task"
+      className="bg-mainBackground p-3 h-[130px] min-h-[100px] flex items-center text-left rounded-xl hover:ring-1 hover:ring-inset hover:ring-gray-500 cursor-grab relative task border border-rose-500"
     >
       <p className="my-auto h-[90%] w-full overflow-x-hidden overflow-y-auto whitespace-pre-wrap">
         {task.content}

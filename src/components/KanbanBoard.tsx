@@ -18,20 +18,19 @@ import TaskCard from "./TaskCard";
 import { defaultCols } from "./data";
 
 
-
 const generateId = () => {
-    return Math.floor(Math.random() * 1000);
-  };
+  return Math.floor(Math.random() * 1000);
+};
 
-  const getInialState = () => {
-    const localStorageTasks = localStorage.getItem("tasks")
-    return localStorageTasks ? JSON.parse(localStorageTasks) : []
-  }
+const getInialState = () => {
+  const localStorageTasks = localStorage.getItem("tasks");
+  return localStorageTasks ? JSON.parse(localStorageTasks) : [];
+};
 
-  const getInialColumns = () => {
-    const localStorageColumns = localStorage.getItem("columns")
-    return localStorageColumns ? JSON.parse(localStorageColumns) : []
-  }
+const getInialColumns = () => {
+  const localStorageColumns = localStorage.getItem("columns");
+  return localStorageColumns ? JSON.parse(localStorageColumns) : defaultCols;
+};
 
 
 const KanbanBoard = () => {
@@ -40,23 +39,10 @@ const KanbanBoard = () => {
   const [activeColumn, setActiveColumn] = useState<Column | null>(null);
   const [activeTask, setActiveTask] = useState<Task | null>(null);
 
-  
-  // useEffect(() => {
-  //   const localStorageTasks = localStorage.getItem("tasks");
-  //   if(localStorageTasks !== null) setTasks(JSON.parse(localStorageTasks)) 
-  // }, []);
-
-  // useEffect(() => {
-  //   const localStorageTasks = localStorage.getItem("columns");
-  //   if(localStorageTasks !== null) setColumns(JSON.parse(localStorageTasks)) 
-  // }, []);
-   
-
   useEffect(() => {
-    window.localStorage.setItem('tasks', JSON.stringify(tasks));  
-    window.localStorage.setItem('columns', JSON.stringify(columns));
+    window.localStorage.setItem("tasks", JSON.stringify(tasks));
+    window.localStorage.setItem("columns", JSON.stringify(columns));
   }, [tasks, columns]);
-
 
   const columnsId = useMemo(
     () => columns.map((column) => column?.id),
@@ -70,7 +56,6 @@ const KanbanBoard = () => {
     };
     setColumns([...columns, columnToAdd]);
   };
-
 
   const createTask = (columnId: Id) => {
     const newTask: Task = {
@@ -118,7 +103,6 @@ const KanbanBoard = () => {
     }
   };
 
-
   function onDragOver(event: DragOverEvent) {
     const { active, over } = event;
     if (!over) return;
@@ -133,7 +117,6 @@ const KanbanBoard = () => {
 
     if (!isActiveATask) return;
 
-   
     // Im dropping a Task over another Task
     if (isActiveATask && isOverATask) {
       setTasks((tasks) => {
@@ -164,7 +147,6 @@ const KanbanBoard = () => {
     }
   }
 
-
   const onDragEnd = (event: DragEndEvent) => {
     setActiveColumn(null);
     setActiveTask(null);
@@ -189,8 +171,6 @@ const KanbanBoard = () => {
     });
   };
 
-
-
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
@@ -198,8 +178,6 @@ const KanbanBoard = () => {
       },
     })
   );
-
-
 
   return (
     <div className="flex m-auto min-h-[1100px] w-screen pt-20 overflow-x-auto overflow-y-hidden px-20">

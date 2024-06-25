@@ -28,22 +28,34 @@ const generateId = () => {
     return localStorageTasks ? JSON.parse(localStorageTasks) : []
   }
 
+  const getInialColumns = () => {
+    const localStorageColumns = localStorage.getItem("columns")
+    return localStorageColumns ? JSON.parse(localStorageColumns) : []
+  }
+
 
 const KanbanBoard = () => {
   const [tasks, setTasks] = useState<Task[]>(getInialState());
-  const [columns, setColumns] = useState<Column[]>(defaultCols);
+  const [columns, setColumns] = useState<Column[]>(getInialColumns());
   const [activeColumn, setActiveColumn] = useState<Column | null>(null);
   const [activeTask, setActiveTask] = useState<Task | null>(null);
 
   
-  useEffect(() => {
-    const localStorageTasks = localStorage.getItem("tasks");
-    if(localStorageTasks !== null) setTasks(JSON.parse(localStorageTasks)) 
-  }, []);
+  // useEffect(() => {
+  //   const localStorageTasks = localStorage.getItem("tasks");
+  //   if(localStorageTasks !== null) setTasks(JSON.parse(localStorageTasks)) 
+  // }, []);
+
+  // useEffect(() => {
+  //   const localStorageTasks = localStorage.getItem("columns");
+  //   if(localStorageTasks !== null) setColumns(JSON.parse(localStorageTasks)) 
+  // }, []);
+   
 
   useEffect(() => {
-    window.localStorage.setItem('tasks', JSON.stringify(tasks));   
-  }, [tasks]);
+    window.localStorage.setItem('tasks', JSON.stringify(tasks));  
+    window.localStorage.setItem('columns', JSON.stringify(columns));
+  }, [tasks, columns]);
 
 
   const columnsId = useMemo(

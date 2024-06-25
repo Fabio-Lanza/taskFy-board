@@ -64,8 +64,8 @@ function ColumnContainer({
       border-2
       border-pink-500
       w-[350px]
-      h-[600px]
-      max-h-[600px]
+      h-[550px]
+      max-h-[550px]
       rounded-md
       flex
       flex-col

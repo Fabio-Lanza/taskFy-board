@@ -190,7 +190,7 @@ const KanbanBoard = () => {
 
 
   return (
-    <div className="flex m-auto min-h-[1200px] w-screen pt-20 overflow-x-auto overflow-y-hidden px-20">
+    <div className="flex m-auto min-h-[1100px] w-screen pt-20 overflow-x-auto overflow-y-hidden px-20">
       <DndContext
         sensors={sensors}
         onDragOver={onDragOver}
